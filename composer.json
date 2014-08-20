@@ -1,5 +1,5 @@
 {
-	"name": "thefox/smtpd",
+	"name": "mambaru/smtpd",
 	"description": "SMTP server (library) written in PHP.",
 	"license": "GPLv3",
 	"type": "library",
