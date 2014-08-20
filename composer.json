@@ -1,6 +1,6 @@
 {
 	"name": "mambaru/smtpd",
-	"description": "SMTP server (library) written in PHP.",
+	"description": "Fork thefox/smtpd. SMTP server (library) written in PHP. In this fork we use eXorus/php-mime-mail-parser as mail parser instead of zend::message",
 	"license": "GPLv3",
 	"type": "library",
 	"keywords": [ "smtp", "email", "mail", "server", "daemon" ],
