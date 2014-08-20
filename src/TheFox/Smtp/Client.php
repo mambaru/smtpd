@@ -7,10 +7,8 @@ namespace TheFox\Smtp;
 #use InvalidArgumentException;
 #use DateTime;
 
-use Zend\Mail\Message;
-
 use TheFox\Network\AbstractSocket;
-use TheFox\Smtp\StringParser;
+use eXorus\PhpMimeMailParser\Parser;
 
 class Client{
 	
@@ -39,7 +37,7 @@ class Client{
 	public function setId($id){
 		$this->id = $id;
 	}
-	
+
 	public function getId(){
 		return $this->id;
 	}
@@ -157,7 +155,7 @@ class Client{
 		
 		$str = new StringParser($msgRaw);
 		$args = $str->parse();
-		#ve($args);
+		//print_r($args);
 		
 		$command = array_shift($args);
 		$commandcmp = strtolower($command);
@@ -182,10 +180,14 @@ class Client{
 			if($this->getStatus('hasHello')){
 				if(isset($args[0]) && $args[0]){
 					$this->setStatus('hasMail', true);
-					$from = $args[0];
+                    $from = count($args) > 1 ? $args[1] : $args[0];
+
 					if(substr(strtolower($from), 0, 6) == 'from:<'){
 						$from = substr(substr($from, 6), 0, -1);
-					}
+					}elseif(substr(strtolower($from), 0, 1) == '<'){
+                        $from = substr(substr($from, 1), 0, -1);
+                    }
+
 					#$this->log('debug', 'client '.$this->id.' from: /'.$from.'/');
 					$this->from = $from;
 					$this->mail = '';
@@ -207,11 +209,16 @@ class Client{
 			if($this->getStatus('hasHello')){
 				if(isset($args[0]) && $args[0]){
 					$this->setStatus('hasMail', true);
-					$rcpt = $args[0];
+					$rcpt = count($args) > 1 ? $args[1] : $args[0];
+
 					if(substr(strtolower($rcpt), 0, 4) == 'to:<'){
 						$rcpt = substr(substr($rcpt, 4), 0, -1);
-						$this->rcpt[] = $rcpt;
-					}
+					}elseif(substr(strtolower($rcpt), 0, 1) == '<'){
+                        $rcpt = substr(substr($rcpt, 1), 0, -1);
+                    }
+
+                    $this->rcpt[] = $rcpt;
+
 					#$this->log('debug', 'client '.$this->id.' rcpt: /'.$rcpt.'/');
 					return $this->sendOk();
 				}
@@ -246,10 +253,11 @@ class Client{
 				if($msgRaw == '.'){
 					
 					$this->mail = substr($this->mail, 0, -strlen(static::MSG_SEPARATOR));
-					
-					$zmail = Message::fromString($this->mail);
-					
-					$this->getServer()->mailNew($this->from, $this->rcpt, $zmail);
+					$parser = new Parser();
+                    $parser->setText($this->mail);
+                    //$parser = Message::fromString($this->mail);
+
+					$this->getServer()->mailNew($this->from, $this->rcpt, $parser);
 					$this->from = '';
 					$this->rcpt = array();
 					$this->mail = '';
