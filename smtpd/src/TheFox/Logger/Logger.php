@@ -5,7 +5,8 @@ namespace TheFox\Logger;
 use DateTime;
 
 class Logger{
-	
+    const DEBUG_MODE_ON = true;
+
 	const DEBUG 		= 100;
 	const INFO 			= 200;
 	const NOTICE 		= 250;
@@ -49,15 +50,17 @@ class Logger{
 	}
 	
 	public function addRecord($level, $message){
-		$dt = new DateTime();
-		
-		$line = '['.$dt->format('Y/m/d H:i:sO').'] '.$this->getName().'.'.static::$levels[$level].': '.$message.PHP_EOL;
-		
-		foreach($this->handlers as $handler){
-			if($level >= $handler->getLevel()){
-				file_put_contents($handler->getPath(), $line, FILE_APPEND);
-			}
-		}
+        if (self::DEBUG_MODE_ON) {
+            $dt = new DateTime();
+
+            $line = '['.$dt->format('Y/m/d H:i:sO').'] '.$this->getName().'.'.static::$levels[$level].': '.$message.PHP_EOL;
+
+            foreach($this->handlers as $handler){
+                if($level >= $handler->getLevel()){
+                    file_put_contents($handler->getPath(), $line, FILE_APPEND);
+                }
+            }
+        }
 	}
 	
 	public function debug($message){
