@@ -5,7 +5,7 @@ namespace TheFox\Logger;
 use DateTime;
 
 class Logger{
-    const DEBUG_MODE_ON = true;
+    const DEBUG_MODE_ON = false;
 
 	const DEBUG 		= 100;
 	const INFO 			= 200;
