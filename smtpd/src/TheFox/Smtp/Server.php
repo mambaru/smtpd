@@ -10,7 +10,7 @@ use TheFox\Network\Socket;
 
 class Server extends Thread{
 	
-	const LOOP_USLEEP = 10000;
+	const LOOP_USLEEP = 100;
 
 	private $log;
 	private $socket;
@@ -155,9 +155,8 @@ class Server extends Thread{
 	public function loop(){
 		while(!$this->getExit()){
 			$this->run();
-			//usleep(static::LOOP_USLEEP);
+			usleep(static::LOOP_USLEEP);
 		}
-		
 		$this->shutdown();
 	}
 	
